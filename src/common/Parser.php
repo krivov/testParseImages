@@ -9,28 +9,50 @@
  */
 class Parser
 {
+    /** @var  string */
     protected $_html;
 
+    /** @var  string */
     protected $_url;
 
+    /** @var array  */
     protected $_urls = [];
+
+    /** @var  array */
     protected $_images;
 
+    /**
+     * Parser constructor.
+     *
+     * @param $url
+     */
     function __construct($url)
     {
         $this->_url = $url;
         $this->_html = file_get_contents($url);
     }
 
+    /**
+     * Check is load main html
+     *
+     * @return bool
+     */
     public function isLoad() {
         return (boolean)$this->_html;
     }
 
+    /**
+     * Start parse process
+     */
     public function start() {
         $this->getAllImageUrl($this->_html);
     }
 
-
+    /**
+     * Get all image url and add them to $this->_urls array
+     *
+     * @param $htmlContent
+     */
     protected function getAllImageUrl($htmlContent) {
         preg_match_all("/<img (.*)src=(\"|')(?<url>.*)(\"|')/U", $htmlContent, $matches);
         $imgArray = $matches['url'];
@@ -44,6 +66,12 @@ class Parser
         );
     }
 
+    /**
+     * Add image url to $this->_urls array
+     *
+     * @param $imageUrl
+     * @param $rootSite
+     */
     protected function addImageUrl($imageUrl, $rootSite) {
 
         //remove all after sign '?'
