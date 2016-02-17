@@ -46,6 +46,7 @@ class Parser
      */
     public function start() {
         $this->getAllImageUrl($this->_html);
+        $this->getAllCss($this->_html, $this->_url);
     }
 
     /**
@@ -85,6 +86,14 @@ class Parser
             return;
         }
 
+        $uploadUrl = $this->prepareUrl($imageUrl, $rootSite);
+
+        if (!in_array($uploadUrl, $this->_urls)) {
+            $this->_urls[] = $uploadUrl;
+        }
+    }
+
+    protected function prepareUrl($imageUrl, $rootSite) {
         $siteUrlParse = parse_url($rootSite);
         $siteUrlRoot = $siteUrlParse['scheme'] . "://" . $siteUrlParse['host'] . "/";
 
@@ -108,8 +117,58 @@ class Parser
             }
         }
 
-        if (!in_array($imageUrl, $this->_urls)) {
-            $this->_urls[] = $uploadUrl;
+        return $uploadUrl;
+    }
+
+    /**
+     * Get all css from html or css and parse it
+     *
+     * @param $htmlContent
+     * @param $rootUrl
+     */
+    protected function getAllCss($htmlContent, $rootUrl) {
+
+        $imagesFromCss = [];
+
+        preg_match_all("/<link (.*)href=(\"|')(?<url>.*)(\"|')/U", $htmlContent, $matches);
+        $linkArray = $matches['url'];
+        if(!empty($linkArray)) {
+            array_map(
+                function($url) use($rootUrl) {
+                    $this->parseCss($url, $rootUrl);
+                },
+                $linkArray
+            );
         }
+
+        preg_match_all("#url\((.*)(\"|')(?<url>.*)(\"|')(.*)\)#U", $htmlContent, $matches);
+        $urlArray = $matches['url'];
+        if(!empty($urlArray)) {
+            array_map(
+                function($url) use($rootUrl) {
+                    $this->parseCss($url, $rootUrl);
+                    $this->addImageUrl($url, $rootUrl);
+                },
+                $urlArray
+            );
+        }
+    }
+
+    /**
+     * Download css and parse all images
+     *
+     * @param $urlCss
+     * @param $rootUrl
+     */
+    protected function parseCss($urlCss, $rootUrl) {
+        //dont parse link without css extension
+        if (!preg_match("#.(css)$#", $urlCss)) {
+            return;
+        }
+
+        $urlToUpload = $this->prepareUrl($urlCss, $rootUrl);
+        $cssHtml = file_get_contents($urlToUpload);
+
+        $this->getAllCss($cssHtml, $urlToUpload);
     }
 }
