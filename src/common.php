@@ -1,7 +1,7 @@
 <?php
 /**
  * Common parser file
- * 
+ *
  * User: krivov
  * Date: 16.02.16
  * Time: 20:41
