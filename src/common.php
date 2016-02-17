@@ -7,3 +7,6 @@
  */
 
 include "common/Parser.php";
+include "common/Image.php";
+
+define("TMP_FOLDER_PATH", realpath(__DIR__ . '/../tmp/'));

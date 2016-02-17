@@ -29,7 +29,7 @@ class Parser
     function __construct($url)
     {
         $this->_url = $url;
-        $this->_html = file_get_contents($url);
+        $this->_html = @file_get_contents($url);
     }
 
     /**
@@ -47,6 +47,7 @@ class Parser
     public function start() {
         $this->getAllImageUrl($this->_html);
         $this->getAllCss($this->_html, $this->_url);
+        $this->downloadAllImg();
     }
 
     /**
@@ -167,8 +168,18 @@ class Parser
         }
 
         $urlToUpload = $this->prepareUrl($urlCss, $rootUrl);
-        $cssHtml = file_get_contents($urlToUpload);
+        $cssHtml = @file_get_contents($urlToUpload);
 
-        $this->getAllCss($cssHtml, $urlToUpload);
+        if ($cssHtml) {
+            $this->getAllCss($cssHtml, $urlToUpload);
+        } else {
+            echo "Error download: " . $urlToUpload . PHP_EOL;
+        }
+    }
+
+    protected function downloadAllImg() {
+        foreach($this->_urls as $url) {
+            $this->_images[] = new Image($url);
+        }
     }
 }
