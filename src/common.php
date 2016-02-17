@@ -35,7 +35,12 @@ function autoloadPlugins() {
             $className = substr($fileName, 0, strpos($fileName, '.'));
 
             if (class_exists($className)) {
-                $pluginsArray[] = new $className();
+                try {
+                    $pluginsArray[] = new $className();
+                } catch(Exception $e) {
+                    echo "Fail to load plugin: " . $className . PHP_EOL;
+                    echo "Error message: " . $e->getMessage() . PHP_EOL;
+                }
             }
         }
     }
