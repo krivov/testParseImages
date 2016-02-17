@@ -1,6 +1,7 @@
 <?php
 /**
- * Created by PhpStorm.
+ * Common parser file
+ * 
  * User: krivov
  * Date: 16.02.16
  * Time: 20:41
@@ -14,6 +15,8 @@ define("TMP_FOLDER_PATH", realpath(__DIR__ . '/../tmp/'));
 
 /**
  * autoload all plugins from plugins folder
+ *
+ * @return ParserPluginAbstract[] array
  */
 function autoloadPlugins() {
 
