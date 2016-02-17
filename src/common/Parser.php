@@ -101,6 +101,10 @@ class Parser
         $siteUrlParse = parse_url($rootSite);
         $siteUrlRoot = $siteUrlParse['scheme'] . "://" . $siteUrlParse['host'] . "/";
 
+        if (substr($imageUrl, 0, 2) == '//') {
+            $imageUrl = "http://" . substr($imageUrl, 2);
+        }
+
         if (isset($siteUrlParse['path']) && $siteUrlParse['path'] != '/') {
             $pathArray = explode('/', $siteUrlParse['path']);
             unset($pathArray[count($pathArray) - 1]);
