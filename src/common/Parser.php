@@ -21,6 +21,9 @@ class Parser
     /** @var  array */
     protected $_images;
 
+    /** @var  ParserPluginAbstract[] */
+    protected $_plugins;
+
     /**
      * Parser constructor.
      *
@@ -177,9 +180,39 @@ class Parser
         }
     }
 
+    /**
+     * Download all parsed images
+     */
     protected function downloadAllImg() {
         foreach($this->_urls as $url) {
-            $this->_images[] = new Image($url);
+            $newImage = new Image($url);
+
+            $this->_images[] = $newImage;
+            $this->runAllPlugins($newImage);
+        }
+    }
+
+    /**
+     * Add plugins
+     *
+     * @param $plugins
+     */
+    public function addPlugins($plugins) {
+        $this->_plugins = $plugins;
+    }
+
+    /**
+     * Run all plugins for one image
+     *
+     * @param Image $image
+     */
+    protected function runAllPlugins(Image $image) {
+        if ($this->_plugins) {
+            foreach($this->_plugins as $plugin) {
+                if ($plugin instanceof ParserPluginAbstract) {
+                    $plugin->job($image);
+                }
+            }
         }
     }
 }

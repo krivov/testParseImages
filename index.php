@@ -12,8 +12,8 @@ if (isset($argv[1])) {
     $parse = new Parser($argv[1]);
 
     if ($parse->isLoad()) {
+        $parse->addPlugins(autoloadPlugins());
         $parse->start();
-
     } else {
         echo "Error with parsing site url." . PHP_EOL;
     }
